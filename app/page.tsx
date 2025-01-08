@@ -1,13 +1,55 @@
 import { TodoList } from '@/components/todo-list'
 import { AddTodo } from '@/components/add-todo'
+import { prisma } from '@/lib/prisma'
+import { revalidatePath } from 'next/cache'
 
-export default function HomePage() {
+async function getTodos() {
+  return await prisma.todo.findMany({
+    orderBy: { createdAt: 'desc' }
+  })
+}
+
+export default async function Home() {
+  const todos = await getTodos()
+
+  async function addTodo(formData: FormData) {
+    'use server'
+    const title = formData.get('title') as string
+    await prisma.todo.create({
+      data: { title }
+    })
+    revalidatePath('/')
+  }
+
+  async function toggleTodo(id: string, complete: boolean) {
+    'use server'
+    await prisma.todo.update({
+      where: { id },
+      data: { complete }
+    })
+    revalidatePath('/')
+  }
+
+  async function deleteTodo(id: string) {
+    'use server'
+    await prisma.todo.delete({
+      where: { id }
+    })
+    revalidatePath('/')
+  }
+
   return (
-    <main className="container mx-auto px-4 py-10 max-w-2xl">
-      <h1 className="text-3xl font-bold text-center mb-8">Todo 管理系统</h1>
-      <div className="space-y-8">
-        <AddTodo />
-        <TodoList />
+    <main className="min-h-screen bg-[#f5f5f7]">
+      <div className="mx-auto max-w-3xl px-4 py-12">
+        <h1 className="mb-8 text-center text-4xl font-semibold text-[#1d1d1f]">
+          Reminders
+        </h1>
+        <div className="rounded-2xl bg-white/80 backdrop-blur-xl shadow-xl p-6">
+          <AddTodo addTodo={addTodo} />
+          <div className="mt-8">
+            <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
+          </div>
+        </div>
       </div>
     </main>
   )

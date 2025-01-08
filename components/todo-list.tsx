@@ -1,60 +1,54 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useTransition } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
-import { cn } from '@/lib/utils'
+import { Todo } from '@prisma/client'
 
-interface Todo {
-  id: string
-  title: string
-  completed: boolean
+interface TodoListProps {
+  todos: Todo[]
+  toggleTodo: (id: string, complete: boolean) => Promise<void>
+  deleteTodo: (id: string) => Promise<void>
 }
 
-export function TodoList() {
-  const [todos, setTodos] = useState<Todo[]>([])
-
-  useEffect(() => {
-    fetchTodos()
-  }, [])
-
-  const fetchTodos = async () => {
-    const response = await fetch('/api/todos')
-    const data = await response.json()
-    setTodos(data)
-  }
-
-  const toggleTodo = async (id: string) => {
-    await fetch(`/api/todos/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ completed: !todos.find(todo => todo.id === id)?.completed }),
-    })
-    fetchTodos()
-  }
+export function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
+  const [isPending, startTransition] = useTransition()
 
   return (
-    <div className="space-y-4">
+    <ul className="space-y-3">
       {todos.map((todo) => (
-        <div
-          key={todo.id}
-          className="flex items-center space-x-4 p-4 bg-white rounded-lg shadow"
-        >
+        <li key={todo.id} className="todo-item group">
           <Checkbox
-            checked={todo.completed}
-            onCheckedChange={() => toggleTodo(todo.id)}
+            id={todo.id}
+            checked={todo.complete}
+            disabled={isPending}
+            onCheckedChange={(checked) => {
+              startTransition(() => {
+                toggleTodo(todo.id, checked as boolean)
+              })
+            }}
+            className="h-5 w-5 rounded-full border-2 border-[#0071e3] data-[state=checked]:bg-[#0071e3]"
           />
-          <span
-            className={cn(
-              "flex-1",
-              todo.completed && "line-through text-gray-500"
-            )}
+          <label
+            htmlFor={todo.id}
+            className={`flex-1 text-[15px] leading-none ${
+              todo.complete ? 'line-through text-[#86868b]' : ''
+            }`}
           >
             {todo.title}
-          </span>
-        </div>
+          </label>
+          <button
+            onClick={() => {
+              startTransition(() => {
+                deleteTodo(todo.id)
+              })
+            }}
+            disabled={isPending}
+            className="invisible group-hover:visible text-sm text-[#86868b] hover:text-red-500 transition-colors duration-200"
+          >
+            Delete
+          </button>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 } 

@@ -1,38 +1,48 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef } from 'react'
+import { useFormStatus } from 'react-dom'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-export function AddTodo() {
-  const [title, setTitle] = useState('')
+interface AddTodoProps {
+  addTodo: (formData: FormData) => Promise<void>
+}
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title.trim()) return
-
-    await fetch('/api/todos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title }),
-    })
-
-    setTitle('')
-    // 触发列表刷新
-    window.location.reload()
-  }
+function SubmitButton() {
+  const { pending } = useFormStatus()
 
   return (
-    <form onSubmit={handleSubmit} className="flex space-x-4">
+    <Button 
+      type="submit" 
+      disabled={pending}
+      className="todo-button"
+    >
+      Add Reminder
+    </Button>
+  )
+}
+
+export function AddTodo({ addTodo }: AddTodoProps) {
+  const ref = useRef<HTMLFormElement>(null)
+
+  return (
+    <form
+      ref={ref}
+      action={async (formData) => {
+        await addTodo(formData)
+        ref.current?.reset()
+      }}
+      className="flex gap-4"
+    >
       <Input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="输入新的任务..."
-        className="flex-1"
+        type="text"
+        name="title"
+        placeholder="New Reminder"
+        required
+        className="todo-input flex-1"
       />
-      <Button type="submit">添加</Button>
+      <SubmitButton />
     </form>
   )
 } 
