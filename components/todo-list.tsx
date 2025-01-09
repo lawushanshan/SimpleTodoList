@@ -6,7 +6,7 @@ import { Todo } from '@prisma/client'
 
 interface TodoListProps {
   todos: Todo[]
-  toggleTodo: (id: string, complete: boolean) => Promise<void>
+  toggleTodo: (id: string, completed: boolean) => Promise<void>
   deleteTodo: (id: string) => Promise<void>
 }
 
@@ -19,7 +19,7 @@ export function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
         <li key={todo.id} className="todo-item group">
           <Checkbox
             id={todo.id}
-            checked={todo.complete}
+            checked={todo.completed}
             disabled={isPending}
             onCheckedChange={(checked) => {
               startTransition(() => {
@@ -31,7 +31,7 @@ export function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
           <label
             htmlFor={todo.id}
             className={`flex-1 text-[15px] leading-none ${
-              todo.complete ? 'line-through text-[#86868b]' : ''
+              todo.completed ? 'line-through text-[#86868b]' : ''
             }`}
           >
             {todo.title}

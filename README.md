@@ -1,15 +1,15 @@
 # Modern Todo Application
 
-一个现代化的Todo应用，使用Next.js 14开发，具有优雅的用户界面和流畅的用户体验。
+一个现代化的 Todo 应用，使用 Next.js 14 开发，具有优雅的用户界面和流畅的用户体验。
 
 ## 功能特性
 
-- ✨ 新增Todo项目
-- 📋 查看Todo列表
-- ✅ 标记Todo为已完成
+- ✨ 新增 Todo 项目
+- 📋 查看 Todo 列表
+- ✅ 标记 Todo 为已完成
 - 🎯 响应式设计，支持所有设备
 - 🚀 服务器端渲染，确保最佳性能
-- 🎨 现代化UI设计
+- 🎨 现代化 UI 设计
 
 ## 技术栈
 
@@ -21,6 +21,7 @@
 - SQLite (数据库)
 
 ## 项目结构
+
 todo-app/
 ├── app/
 │ ├── api/
@@ -44,18 +45,20 @@ todo-app/
 ## 开发环境设置
 
 1. 克隆项目并安装依赖：
-bash
-git clone <repository-url>
-cd todo-app
-npm install
+   bash
+   git clone <repository-url>
+   cd todo-app
+   npm install
 
 2. 初始化数据库：
+
 ```bash
 npx prisma init
 npx prisma db push
 ```
 
 3. 启动开发服务器：
+
 ```bash
 npm run dev
 ```
@@ -65,10 +68,13 @@ npm run dev
 ## API 接口
 
 ### GET /api/todos
-获取所有Todo项目列表
+
+获取所有 Todo 项目列表
 
 ### POST /api/todos
-创建新的Todo项目
+
+创建新的 Todo 项目
+
 ```json
 {
   "title": "Todo项目标题"
@@ -76,7 +82,9 @@ npm run dev
 ```
 
 ### PATCH /api/todos/[id]
-更新Todo项目状态
+
+更新 Todo 项目状态
+
 ```json
 {
   "completed": true
@@ -86,12 +94,15 @@ npm run dev
 ## 组件说明
 
 ### AddTodo
-新增Todo项目的表单组件，包含输入框和提交按钮。
+
+新增 Todo 项目的表单组件，包含输入框和提交按钮。
 
 ### TodoList
-显示Todo列表的组件，支持标记完成功能。
 
-### UI组件
+显示 Todo 列表的组件，支持标记完成功能。
+
+### UI 组件
+
 - Button: 自定义按钮组件
 - Input: 自定义输入框组件
 - Checkbox: 自定义复选框组件
@@ -116,7 +127,7 @@ npm run lint     # 运行代码检查
 model Todo {
   id        String   @id @default(cuid())
   title     String
-  completed Boolean  @default(false)
+  completed  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

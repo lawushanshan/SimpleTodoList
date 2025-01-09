@@ -21,11 +21,11 @@ export default async function Home() {
     revalidatePath('/')
   }
 
-  async function toggleTodo(id: string, complete: boolean) {
+  async function toggleTodo(id: string, completed: boolean) {
     'use server'
     await prisma.todo.update({
       where: { id },
-      data: { complete }
+      data: { completed }
     })
     revalidatePath('/')
   }
